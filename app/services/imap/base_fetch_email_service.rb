@@ -7,6 +7,13 @@ class Imap::BaseFetchEmailService
     # Override this method
   end
 
+  def disconnect()
+    # close the mailbox and disconnect
+    Rails.logger.info "[IMAP::FETCH_EMAIL_SERVICE] Closing connection #{imap_client}."
+    imap_client.close()
+    imap_client.disconnect()
+  end
+
   private
 
   def authentication_type
@@ -37,13 +44,6 @@ class Imap::BaseFetchEmailService
     message_ids_with_seq.filter_map do |message_id_with_seq|
       process_message_id(message_id_with_seq)
     end
-  end
-
-  def disconnect()
-    # close the mailbox and disconnect
-    Rails.logger.info "[IMAP::FETCH_EMAIL_SERVICE] Closing connection #{imap_client}."
-    imap_client.close()
-    imap_client.disconnect()
   end
 
   def process_message_id(message_id_with_seq)
