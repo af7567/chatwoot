@@ -29,14 +29,17 @@ class Inboxes::FetchImapEmailsJob < MutexApplicationJob
   end
 
   def process_email_for_channel(channel)
-    inbound_emails = if channel.microsoft?
-                       Imap::MicrosoftFetchEmailService.new(channel: channel).perform
+    email_channel = if channel.microsoft?
+                       Imap::MicrosoftFetchEmailService.new(channel: channel)
                      else
-                       Imap::FetchEmailService.new(channel: channel).perform
+                       Imap::FetchEmailService.new(channel: channel)
                      end
+    inbound_emails = email_channel.perform()
+
     inbound_emails.map do |inbound_mail|
       process_mail(inbound_mail, channel)
     end
+    email_channel.disconnect()
   end
 
   def process_mail(inbound_mail, channel)

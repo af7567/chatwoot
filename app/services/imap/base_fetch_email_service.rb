@@ -39,6 +39,13 @@ class Imap::BaseFetchEmailService
     end
   end
 
+  def disconnect()
+    # close the mailbox and disconnect
+    Rails.logger.info "[IMAP::FETCH_EMAIL_SERVICE] Closing connection #{imap_client}."
+    imap_client.close()
+    imap_client.disconnect()
+  end
+
   def process_message_id(message_id_with_seq)
     seq_no, message_id = message_id_with_seq
 
